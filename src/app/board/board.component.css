@@ -1,0 +1,33 @@
+article{
+    text-align: center;
+    margin: 33vh 33vw;
+    background-color: grey;
+    width: 35rem;
+    border-radius: 15px;
+}
+div{
+    display: grid;
+    grid-template-columns: 40px 40px 40px;
+    grid-template-rows: 25px 25px 25px;
+    gap:0;
+    text-align: center;
+    padding-bottom:2rem;
+    margin: 0 13rem ;
+}
+
+app_square{
+    border:1px grey solid;
+}
+
+button{
+    border:1px grey solid;
+    border-radius: 25px;
+    padding: 5px;
+}
+
+main{
+   display: grid;
+}
+h1{
+   padding-top: 2rem;
+}
