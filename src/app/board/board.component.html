@@ -1,16 +1,11 @@
-<article>
-<h1>Cuurent Player: {{ player }} </h1>
-<button (click)="newGame()">Start new Game</button>
-<h2>Player {{ winner }} won the game!</h2>
-<!-- play game!! -->
-<main>
-    <div>
-    <app-square
-    *ngFor="let val of squares;let i = index"
-    [value]="val"
-    (click)="makeMove(i)"
-    >
-    </app-square>
+<div>
+    <div class="status text-center p-4">
+        {{statusMessage}}
+    </div>
+    <div class="board" *ngFor="let row of [0,1,2]">
+        <app-square *ngFor="let col of [0,1,2]" [row]="row" [col]="col" [piece]="board[row][col]"
+            (click)="move(row, col)"></app-square>
+    </div>
+    <div class="pt-2"></div>
+    <button *ngIf="gameOver" class="btn btn-primary new-game" (click)="newGame()">New Game</button>
 </div>
-</main>
-</article>

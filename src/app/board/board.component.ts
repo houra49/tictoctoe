@@ -1,58 +1,125 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { SquareEnum } from '../square/squareEnum';
 
-@Component({
+@Component( {
   selector: 'app-board',
   templateUrl: './board.component.html',
   styleUrls: ['./board.component.css']
-})
-export class BoardComponent implements OnInit {
-  squares! : any[];
-  xIsNext! : boolean;
-  winner! : string;
+} )
+export class BoardComponent implements OnInit
+{
+  @Input() public piece: SquareEnum = SquareEnum.Empty;
+  @Input() public row!: Number;
+  @Input() public col!: Number;
+  private currentPlayer!: SquareEnum;
+  public board!: SquareEnum[][];
+  private isGameOver!: boolean;
+  public statusMessage!: string;
 
-  constructor() { }
+  constructor () { }
 
-  ngOnInit(): void {
+  ngOnInit (): void
+  {
+    this.newGame();
   }
 
-  newGame(){
-    this.squares = Array(9).fill(null);
-    this.winner = '';
-    this.xIsNext = true;
+  get gameOver (): boolean
+  {
+    return this.isGameOver;
   }
 
-  get player(){
-    return this.xIsNext ? 'X' : 'O';
-  }
-
-  makeMove(idx:number){
-    if(!this.squares[idx]){
-      this.squares.splice(idx,1,this.player);
-      this.xIsNext = !this.xIsNext;
-    }
-    this.winner = this.calculateWinner();
-  }
-
-  calculateWinner(){
-    const lines =[
-      [0,1,2],
-      [3,4,5],
-      [6,7,8],
-      [0,3,6],
-      [1,4,7],
-      [2,5,8],
-      [0,4,8],
-      [2,4,6]
-    ];
-
-    for (let i=0;i<lines.length;i++){
-      const [a,b,c] = lines[i];
-      if(
-        this.squares[a] && this.squares[a] === this.squares[b] && this.squares[a] === this.squares[c]
-      ){
-        return this.squares[a];
+  newGame ()
+  {
+    this.board = [];
+    for ( let row = 0; row < 3; row++ )
+    {
+      this.board[row] = [];
+      for ( let col = 0; col < 3; col++ )
+      {
+        this.board[row][col] = SquareEnum.Empty;
       }
     }
-    return null;
+    this.currentPlayer = SquareEnum.X;
+    this.isGameOver = false;
+    this.statusMessage = `Player ${ this.currentPlayer }'s turn.`
+  }
+
+  move ( row: number, col: number ): void
+  {
+    if ( !this.isGameOver && this.board[row][col] === SquareEnum.Empty )
+    {
+      this.board[row][col] = this.currentPlayer;
+    }
+    if ( this.isDraw() )
+    {
+      this.statusMessage = 'It\'s a Draw!';
+      this.isGameOver = true;
+    } else if ( this.isWin() )
+    {
+      this.statusMessage = `Player ${ this.currentPlayer } won!`;
+      this.isGameOver = true;
+    } else
+    {
+      this.currentPlayer = this.currentPlayer === SquareEnum.X ? SquareEnum.O : SquareEnum.X;
+    }
+  }
+  isDraw (): boolean
+  {
+    for ( const columns of this.board )
+    {
+      for ( const col of columns )
+      {
+        if ( col === SquareEnum.Empty )
+        {
+          return false;
+        }
+      }
+    }
+    return !this.isWin();
+  }
+
+  isWin (): boolean
+  {
+    // Horizontal
+    for ( const columns of this.board )
+    {
+      if ( columns[0] === columns[1] && columns[0] === columns[2] && columns[0] !== SquareEnum.Empty )
+      {
+        return true;
+      }
+    }
+
+    // Vertical
+    for ( let col = 0; col < this.board[0].length; col++ )
+    {
+      if (
+        this.board[0][col] === this.board[1][col] &&
+        this.board[0][col] === this.board[2][col] &&
+        this.board[0][col] !== SquareEnum.Empty
+      )
+      {
+        return true;
+      }
+    }
+
+    // Diagonals
+    if (
+      this.board[0][0] === this.board[1][1] &&
+      this.board[0][0] === this.board[2][2] &&
+      this.board[0][0] !== SquareEnum.Empty
+    )
+    {
+      return true;
+    }
+
+    if (
+      this.board[0][2] === this.board[1][1] &&
+      this.board[0][2] === this.board[2][2] &&
+      this.board[0][2] !== SquareEnum.Empty
+    )
+    {
+      return true;
+    }
+    return false;
   }
 }
